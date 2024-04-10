@@ -7,7 +7,7 @@ object PageRank {
    * @return      A map of page.id to a weight of 1.0 for those same WebPage objects
    */
   def equal(pages: Map[String, WebPage]): Map[String, Double] = {
-    Map() // TODO: remove this stub and implement this method
+    pages.map({case (pageId, _) => pageId -> 1.0})
   }
 
   /**

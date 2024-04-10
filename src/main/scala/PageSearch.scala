@@ -3,12 +3,18 @@ import scala.collection.parallel.CollectionConverters._
 
 object PageSearch {
   /**
-   * @param pages  a list of RankedWebPage objects to be searched
-   * @param query  a list of search terms to be counted in those pages
-   * @return       a list of the number of times any of the terms appeared in each page in the same order as given
+   * @param pages a list of RankedWebPage objects to be searched
+   * @param query a list of search terms to be counted in those pages
+   * @return a list of the number of times any of the terms appeared in each page in the same order as given
    */
   def count(pages: List[RankedWebPage], query: List[String]): List[Double] = {
-    List() // TODO: implement this method and remove this stub
+    pages.map { page =>
+      val textWords = page.text.toLowerCase.split("\\W+").toList
+      val textCount = query.map { term =>
+        textWords.count(_.contains(term.toLowerCase))
+      }
+      textCount.sum.toDouble
+    }
   }
 
   /**
