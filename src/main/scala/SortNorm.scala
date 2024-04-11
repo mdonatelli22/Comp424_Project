@@ -49,5 +49,5 @@ object GeometricOrdering extends Ordering[SearchedWebPage] {
 
 object HarmonicOrdering extends Ordering[SearchedWebPage] {
   // TODO: implement an actual comparison based on Harmonic means of weight and textmatch
-  def compare(a: SearchedWebPage, b: SearchedWebPage): Int = (2 * a.weight * a.textmatch / a.weight + a.textmatch) compare (2 * b.weight * b.textmatch / b.weight + b.textmatch)
+  def compare(a: SearchedWebPage, b: SearchedWebPage): Int = (2 * a.weight * a.textmatch / (a.weight + a.textmatch)) compare (2 * b.weight * b.textmatch / (b.weight + b.textmatch))
 }
