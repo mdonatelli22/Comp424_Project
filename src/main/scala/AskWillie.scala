@@ -3,6 +3,21 @@ import scala.io.StdIn.readLine
 import scala.util.Sorting
 
 @main def main(): Unit = {
+  /* rankingMethod and termMatchingMethod let's you select which method
+     To use for ranking ad term frequencies.
+     It's useful to try different combinations for the report */
+  println("Input the ranking method and termMatching method to use (e.g: 2 1)")
+  println("Ranking: 0 -> equal, 1 -> indegree, 2 -> pagerank")
+  println("Search: 0 -> count, 1 -> tf, 2 -> tfidf")
+  println("Press 'Enter' for default")
+  var rankingMethod = 0;
+  var termMatchingMethod = 0;
+  val input = readLine().split(" ").toList
+  if input.length > 1 then {
+    rankingMethod  = input.head.toInt 
+    termMatchingMethod = input.tail.head.toInt
+  }
+
   println("=============================================================")
   println("   _____          __      __      __.__.__  .__  .__ ")
   println("  /  _  \\   _____|  | __ /  \\    /  \\__|  | |  | |__| ____  ")
@@ -16,10 +31,23 @@ import scala.util.Sorting
   val pages: Map[String, WebPage] = mapWebPages(loadWebPages()) // completed for you
 
   // TODO: Measure the importance of each page using one of the functions in PageRank
-  val rankedPages: List[RankedWebPage] = PageRank.equal(pages).map { case (pageId, weight) =>
-    val page = pages(pageId)
-    new RankedWebPage(page, weight)
-  }.toList
+  val rankedPages: List[RankedWebPage] = rankingMethod match
+    case 0 => PageRank.equal(pages).map { case (pageId, weight) =>
+                val page = pages(pageId)
+                new RankedWebPage(page, weight)
+              }.toList
+    case 1 => PageRank.indegree(pages).map { case (pageId, weight) =>
+                val page = pages(pageId)
+                new RankedWebPage(page, weight)
+              }.toList
+    case 2 => PageRank.pagerank(pages).map { case (pageId, weight) =>
+                val page = pages(pageId)
+                new RankedWebPage(page, weight)
+              }.toList
+    case _ => PageRank.equal(pages).map { case (pageId, weight) =>
+                val page = pages(pageId)
+                new RankedWebPage(page, weight)
+              }.toList
 
   // Get user input then perform search until ":quit" is entered
   var query: String = ""
@@ -33,9 +61,20 @@ import scala.util.Sorting
     terms != List(":quit")
   } do {
     // TODO: Measure the textual match of each page to these terms using one of the functions in PageSearch
-    val searchedPages: List[SearchedWebPage] = PageSearch.count(rankedPages, terms).zip(rankedPages).map { case (score, page) =>
-      new SearchedWebPage(page, score)
-    } // call PageSearch.???? here
+    val searchedPages: List[SearchedWebPage] = termMatchingMethod match
+      case 0 => PageSearch.count(rankedPages, terms).zip(rankedPages).map { case (score, page) =>
+                  new SearchedWebPage(page, score)
+                } // call PageSearch.???? here
+      case 1 => PageSearch.tf(rankedPages, terms).zip(rankedPages).map { case (score, page) =>
+                  new SearchedWebPage(page, score)
+                }
+      case 2 => PageSearch.tfidf(rankedPages, terms).zip(rankedPages).map { case (score, page) =>
+                  new SearchedWebPage(page, score)
+                }
+      case _ => PageSearch.count(rankedPages, terms).zip(rankedPages).map { case (score, page) =>
+                  new SearchedWebPage(page, score)
+                }
+
 
     // normalize the ranges for weight and textmatch on these pages
     val pageArray = SearchedWebPageNormalize.normalize(searchedPages).toArray
