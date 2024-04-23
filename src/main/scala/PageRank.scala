@@ -40,7 +40,7 @@ object PageRank {
     }
     val totalWalks = 10000 + 100
     countVisits.map { case (pageId, count) =>
-      pageId -> ((count.toDouble + 1) / totalWalks + numOfPages)
+      pageId -> ((count.toDouble + 1) / (totalWalks + numOfPages))
 
     }
 
