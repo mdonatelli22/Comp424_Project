@@ -15,10 +15,10 @@ object PageRank {
    * @return A map of page.id to a weight that is a simple count of the number of pages linking to that page
    */
   def indegree(pages: Map[String, WebPage]): Map[String, Double] = {
-    pages.map { case (pageId, _) =>
-      val numPagesLinking = pages.values.count(_.links.contains(pageId))
+    pages.par.map { case (pageId, _) =>
+      val numPagesLinking = pages.values.par.count(_.links.contains(pageId))
       pageId -> numPagesLinking.toDouble
-    }
+    }.seq.toMap
   }
 
   def pagerank(pages: Map[String, WebPage]): Map[String, Double] = {
