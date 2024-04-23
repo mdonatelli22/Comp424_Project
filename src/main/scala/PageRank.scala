@@ -26,7 +26,8 @@ object PageRank {
     val pageIds = pages.keys.toList
     val numOfPages = pageIds.size
 
-    val countVisits = (1 to 10000).foldLeft(Map[String,Int]().withDefaultValue(0)) { (counts,_) =>
+    //following appendix B formulas
+    val countVisits = (1 to 10000).par.foldLeft(Map[String,Int]().withDefaultValue(0)) { (counts,_) =>
       val lastPage = (1 to 100).foldLeft(pageIds(randNum.nextInt(numOfPages))) { (currPage, _) =>
         if(randNum.nextDouble() < 0.85 && pages(currPage).links.nonEmpty){
           pages(currPage).links(randNum.nextInt(pages(currPage).links.size))
