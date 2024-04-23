@@ -35,18 +35,21 @@ object PageSearch {
    * @return      a list of the TF-IDF score for each page in the same order given
    */
   def tfidf(pages: List[RankedWebPage], query: List[String]): List[Double] = {
-    // TF values using prev method
-    val TFValues = tf(pages, query)
-    // Number of documents in the corpus
-    val N = pages.size
-    // List of D values
-    val DValues = pages.par.map { page =>
-      val textWords = page.text.toLowerCase.split("\\W+").toList
-      (for word <- query yield if textWords.contains(word) then 1 else 0).sum.toDouble
+    // Number of pages. useful later ...
+    val N = pages.length
+    // Computing TFIDF value for each page
+    pages.map { page =>
+      // All words on the page
+      val pageWords = page.text.toLowerCase.split("\\W+").toList
+      // TFIDF value for each term
+      val tfidf = query.map { term =>
+        val wordCount = pageWords.count(_.contains(term.toLowerCase))
+        val TF = wordCount / pageWords.length
+        val D = (for page <- pages yield if page.contains(term) then 1 else 0).sum.toDouble
+        val IDF = log(N/(D+1))
+        TF/IDF
+      }
+      tfidf.sum // Summing the TFIDF values together for the page
     }
-    // Formula in Appendix C
-    val IDFValues = DValues.par.map(D => log(N/(D+1)))
-    // TFIDF calculation
-    TFValues.zip(IDFValues).map((tf, idf) => tf/idf)
   }
 }
