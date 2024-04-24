@@ -46,9 +46,11 @@ object PageSearch {
       // TFIDF value for each term
       val TFValues = query.map { term =>
         val wordCount = pageWords.count(_.contains(term.toLowerCase))
-        wordCount / pageWords.length
+
+        wordCount.toDouble / pageWords.length.toDouble
       }
-      TFValues.zip(DValues).par.map((tf_value, d_value)=> tf_value/log(N/d_value)).sum// Summing the TFIDF values together for the page
+      val tfidf = TFValues.zip(DValues).par.map((tf_value, d_value)=> tf_value*log(N/d_value)).sum// Summing the TFIDF values together for the page
+      tfidf
     }
   }
 }
