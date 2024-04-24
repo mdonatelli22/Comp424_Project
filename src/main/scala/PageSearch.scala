@@ -37,19 +37,18 @@ object PageSearch {
   def tfidf(pages: List[RankedWebPage], query: List[String]): List[Double] = {
     // Number of pages. useful later ...
     val N = pages.length
+    // D values
+    val DValues = query.map(term => (for p <- pages yield if p.text.toLowerCase.split("\\W+").toList.contains(term.toLowerCase) then 1 else 0).sum.toDouble)
     // Computing TFIDF value for each page
     pages.map { page =>
       // All words on the page
       val pageWords = page.text.toLowerCase.split("\\W+").toList
       // TFIDF value for each term
-      val tfidf = query.map { term =>
+      val TFValues = query.map { term =>
         val wordCount = pageWords.count(_.contains(term.toLowerCase))
-        val TF = wordCount / pageWords.length
-        val D = (for p <- pages yield if page.text.toLowerCase.split("\\W+").toList.contains(term.toLowerCase) then 1 else 0).sum.toDouble
-        val IDF = log(N/D)
-        TF/IDF
+        wordCount / pageWords.length
       }
-      tfidf.sum // Summing the TFIDF values together for the page
+      TFValues.zip(DValues).map((tf_value, d_value)=> tf_value/log(N/d_value)).sum// Summing the TFIDF values together for the page
     }
   }
 }
