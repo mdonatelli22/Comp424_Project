@@ -45,8 +45,8 @@ object PageSearch {
       val tfidf = query.map { term =>
         val wordCount = pageWords.count(_.contains(term.toLowerCase))
         val TF = wordCount / pageWords.length
-        val D = (for page <- pages yield if page.contains(term) then 1 else 0).sum.toDouble
-        val IDF = log(N/(D+1))
+        val D = (for p <- pages yield if page.text.toLowerCase.split("\\W+").toList.contains(term.toLowerCase) then 1 else 0).sum.toDouble
+        val IDF = log(N/D)
         TF/IDF
       }
       tfidf.sum // Summing the TFIDF values together for the page
