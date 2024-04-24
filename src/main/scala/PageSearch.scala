@@ -49,7 +49,7 @@ object PageSearch {
 
         wordCount.toDouble / pageWords.length.toDouble
       }
-      val tfidf = TFValues.zip(DValues).par.map((tf_value, d_value)=> tf_value*log(N/d_value)).sum// Summing the TFIDF values together for the page
+      val tfidf = TFValues.zip(DValues).par.map((tf_value, d_value)=> tf_value*log(N/d_value + 1)).sum// Summing the TFIDF values together for the page
       tfidf
     }
   }
